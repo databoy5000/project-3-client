@@ -4,7 +4,7 @@ import ReactMapGl, { Marker, Popup } from 'react-map-gl'
 import axios from 'axios'
 
 import { baseUrl, memoriesPath } from '../../lib/api'
-import { publicToken, mapboxStyleUrl } from '../../lib/mapbox'
+import { publicToken } from '../../lib/mapbox'
 
 function MemoryMap() {
 
@@ -96,7 +96,6 @@ function MemoryMap() {
       <div onClick={handleResize}>
         <ReactMapGl {...viewport}
           mapboxApiAccessToken={publicToken}
-          mapStyle={mapboxStyleUrl}
           onViewportChange={viewport => {
             setViewport(viewport)
           }}

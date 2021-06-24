@@ -41,19 +41,15 @@ function Register() {
   }
 
   const handleUnique = async () => {
-    console.log('formData: ', formData)
     try {
-      const res = await userCheck({
+      await userCheck({
         username: formData.username,
         email: formData.email,
       })
-      
-      console.log('res: ', res)
 
       setIsUniqueId(true)
       setFormError({ ...formError, username: '' })
     } catch (err) {
-      console.log('err.response.data: ', err.response.data)
       const errorMessage = err.response.data.errMessage.username
       setIsUniqueId(false)
       setFormError({ ...formError, username: errorMessage })
@@ -69,8 +65,6 @@ function Register() {
       history.push('/memories')
     } catch (err) {
       const errorMessage = err.response.data.errMessage
-      console.log('errMessage: ', errorMessage)
-      console.log('err.response: ', err.response)
       setFormError({ ...formError, ...errorMessage })
     }
   }
@@ -78,7 +72,6 @@ function Register() {
   return (
     <>
       <div className="title is-2 has-text-centered has-background-black has-text-white">register</div>
-      <p>{console.log('formError: ', formError)}</p>
       <section className="container">
         <div className="columns is-vcentered">
           <div className="column is-half is-centered">

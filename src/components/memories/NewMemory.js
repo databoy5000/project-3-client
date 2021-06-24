@@ -6,7 +6,6 @@ import ImageUploadField from './ImageUploadField'
 import { useForm } from '../../hooks/useForm'
 import { createMemory, memoriesPath } from '../../lib/api'
 
-
 function NewMemory() {
 
   function formatTagArray(tags) {
@@ -63,19 +62,19 @@ function NewMemory() {
     })
   }
 
-  // const handleDanger = (e) => {
+  const handleDanger = (e) => {
 
-  //   const emptyField = (e.target.value.length === 0)
-  //   const requiredFields = ['title', 'date', 'description']
+    const emptyField = (e.target.value.length === 0)
+    const requiredFields = ['title', 'date', 'description']
 
-  //   if (requiredFields.includes(e.target.name) && emptyField) {
-  //     setFormError({ ...formError, [e.target.name]: 'Required field.' })
-  //   }
+    if (requiredFields.includes(e.target.name) && emptyField) {
+      setFormError({ ...formError, [e.target.name]: 'Required field.' })
+    }
 
-  //   if (formError.errMessage) {
-  //     setFormError({ ...formError, errMessage: '' })
-  //   }
-  // }
+    if (formError.errMessage) {
+      setFormError({ ...formError, errMessage: '' })
+    }
+  }
 
   const handleUpload = (file) => {
     handleChange({ target: { name: 'image', value: file } })

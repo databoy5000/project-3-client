@@ -3,15 +3,14 @@ import React from 'react'
 import { useHistory, useParams } from 'react-router-dom'
 import ReactMapGl, { Marker } from 'react-map-gl'
 import moment from 'moment'
+import { confirmAlert } from 'react-confirm-alert'
+import 'react-confirm-alert/src/react-confirm-alert.css'
 
 import Error from '../common/Error'
 import { baseUrl, memoriesPath, commentPath, headers, deleteMemory, editPath } from '../../lib/api'
 import { isOwner } from '../../lib/auth'
-import { publicToken, mapboxStyleUrl } from '../../lib/mapbox'
+import { publicToken } from '../../lib/mapbox'
 import { subSetViewport } from '../../lib/mapbox'
-
-import { confirmAlert } from 'react-confirm-alert'
-import 'react-confirm-alert/src/react-confirm-alert.css'
 
 function SingleMemory() {
 
@@ -30,11 +29,13 @@ function SingleMemory() {
   })
   const [formError, setFormError] = React.useState(formComment)
 
+  const defaultViewportWidth = window.innerWidth - 200
+
   //* For map content-------------------
   const [viewport, setViewport] = React.useState({
     latitude: 51.51106,
     longitude: -0.13519,
-    width: '500px',
+    width: defaultViewportWidth,
     height: '500px',
     zoom: 14,
   })
@@ -68,6 +69,16 @@ function SingleMemory() {
 
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [hasComments])
+
+  function handleResize() {
+    const newWidth = window.innerWidth - 200
+    setViewport({ ...viewport, width: newWidth }) 
+  }
+
+  React.useEffect( () => {
+    window.addEventListener('resize', handleResize)
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  },[])
 
 
   const handleChange = (e) => {
@@ -169,27 +180,26 @@ function SingleMemory() {
 
       { memory && (
         <>
-          <div className="container">
-            <div className="card has-background-black has-text-white is-centered">
+          <div className="container single-memory">
+            <div className="single-memo-card card has-text-white is-centered">
               
-              <div className="title has-text-white is-3">
-                {memory.title}
-                <span className="subtitle is-7 has-text-warning">
-                  member - {memory.user.username}
-                </span>
-                <p>{moment(memory.date).format('MMMM Do, YYYY')}</p>
+              <div className="title-header title has-text-white is-3">
+                <p className="title-p">{memory.title}</p>
+                <p className="date-p has-text-white">
+                  {`${moment(memory.date).format('MMMM Do, YYYY')} - by ${memory.user.username}`}
+                </p>
               </div>
 
               <div className="columns">
-                <div className="column">
+                <div className="column" >
 
-                  <div className="title is-5 has-text-success">
-                    {memory.location.userInput}
+                  <div className="has-text-centered title is-5">
+                    <p><span className="location">Location</span>: {memory.location.userInput}</p>
                   </div>
 
-                  <div className="column is-half is-offset-half">
+                  <div className="column">
 
-                    <figure className="image">
+                    <figure className="image memory-image">
                       <img
                         height="540px"
                         width="810px"
@@ -198,21 +208,17 @@ function SingleMemory() {
                       />
                     </figure>
 
-                  </div><div className="column is-6 description">
+                  </div>
+                  
+                  <div className="memory-description is-6 has-text-black has-text-justified">
                     {memory.description}
                   </div>
 
-                  <div className="columns is-mobile">
-
-                  </div>
-
-
-                  <div className="column is-offset-one-third">
-                    <div className="bd-notification is-info">
-
-                      <ReactMapGl {...viewport}
+                  <div className="column is-center">
+                    <div className="memory-mapbox">
+                      <ReactMapGl
+                        {...viewport}
                         mapboxApiAccessToken={publicToken}
-                        mapStyle={mapboxStyleUrl}
                         onViewportChange={viewport => {
                           setViewport(viewport)
                         }}
@@ -232,6 +238,7 @@ function SingleMemory() {
                         </Marker>
 
                       </ReactMapGl>
+
                       <br></br>
                       {isOwner(memory.user.userId) &&
                       <button 
@@ -248,7 +255,7 @@ function SingleMemory() {
 
               </div>
             </div>
-            <div className="container">
+            <div className="container comment-form">
               <div className="columns">
 
                 <form
@@ -265,8 +272,8 @@ function SingleMemory() {
                     <label className="label">Comments</label>
                     <div className="control">
 
-                      <input
-                        className={`input ${formError.text ? 'is-danger' : ''} `}
+                      <textarea
+                        className={`memory-textarea input ${formError.text ? 'is-danger' : ''} `}
                         placeholder="Type your comments here.."
                         name="text"
                         value={formComment.text || ''}
@@ -277,7 +284,7 @@ function SingleMemory() {
                     {formError.text
                       &&
                       <p className="help is-danger">
-                        Oops, something went wrong. Check if you are logged in.
+                        Oops, something went wrong. Check that you are logged in.
                       </p>
                     }
                   </div>
@@ -295,14 +302,14 @@ function SingleMemory() {
               </div>
 
               <div className="section">
-                <div className="comments">
+                <div className="comments column">
                   {memory.comments && memory.comments.map(comment => {
 
                     return (
-                      <div key={comment._id}>
+                      <div key={comment._id} className="single-comment box column is-three-fifths">
 
-                        <h6>{comment.user.username}</h6>
-                        <p>{comment.text}</p>
+                        <h6><span className='comment-span'>Posted by</span>: {comment.user.username}</h6>
+                        <p className="comment-text">{comment.text}</p>
 
                         {isOwner(comment.user.userId) &&
                           <button

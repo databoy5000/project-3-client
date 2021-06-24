@@ -108,8 +108,7 @@ function EditMemory() {
     e.preventDefault()
 
     try {
-      const res = await editMemory(memoryId, formData)
-      console.log('res',res.data)
+      await editMemory(memoryId, formData)
       history.push(`${memoriesPath}/${memoryId}`)
     } catch (err) {
       setFormError({ ...formError, errMessage: err.response.data.errMessage })

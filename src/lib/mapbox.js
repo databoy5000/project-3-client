@@ -1,9 +1,6 @@
 import { WebMercatorViewport } from 'react-map-gl'
 
-export const apiUrl = 'https://api.mapbox.com/geocoding/v5/mapbox.places/'
 export const publicToken = process.env.REACT_APP_MAPBOX_TOKEN
-export const endUrl = `.json?access_token=${publicToken}`
-export const mapboxStyleUrl = 'mapbox://styles/kathackethal/ckp5dwj7a02wb18rxnm537n5i'
 
 export function subSetViewport(memoryObject) {
 

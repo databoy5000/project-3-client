@@ -1,5 +1,3 @@
-
-
 .searchbar {
   position: sticky;
   display: inline-block;
@@ -11,19 +9,6 @@
   bottom: 0;
   padding: 30px;
 }
-
-// .columns-modal {
-//   margin-top: 50px;
-// }
-
-// .modal-content {
-//   margin-top: 100px;
-//   width: 450px;
-// }
-
-
-
-
 
 .paddingless {
   padding: 0px 0px 0px 0px;
@@ -37,7 +22,6 @@
   min-height: calc(100vh - 11.25rem);
 }
 
-
 .form {
   margin-top: 20vh;
 }
@@ -46,14 +30,11 @@
   height: 400px;
   }
 
-
-
   .mapButton {
     background: none;
     cursor: arrow;
     border: none;
   }
-
 
   .sidebar {
     background-color: rgba(35, 55, 75, 0.9);
@@ -82,23 +63,10 @@ button.mapboxgl-popup-close-button {
 
 }
 
-// .index-card {
-
-//   height: 30%;
-//   display: flex;
-//   flex-direction: column;
-//   padding: 10px;
-//   margin-top: 6vh;
-
-// }
-
 .searchbar {
   position: sticky;
   display: inline-block;
 }
-
-
-
 
 .about {
   text-align: left;
@@ -136,10 +104,6 @@ button.mapboxgl-popup-close-button {
   background-attachment: fixed;
 }
 
-// .memory-map-background {
-//   background-image: url('https://imgur.com/TUTvUli.png');
-// }
-
 .new-memory-background {
   background-image: url('https://imgur.com/evNO5MR.png');
   background-size: cover;
@@ -159,17 +123,52 @@ button.mapboxgl-popup-close-button {
   background-image:url('https://imgur.com/283w7JC.png');
 }
 
-// .register-background {
-//   background-image:url('https://imgur.com/DCugnIH.png')
-// }
+.title-header {
+  background-color: #38328a;
+  .date-p {
+    font-size: 20px;
+  }
+}
 
-// .login-background {
-//   background-image: url('https://imgur.com/JbqMTzr.png');
-//   background-size: cover;
-//   // background-repeat: no-repeat;
-//   // background-position: center;
+.location {
+  text-decoration: underline;
+}
 
-// }
+.single-memo-card {
+  padding: 0;
+}
+
+.memory-description {
+  padding: 20px;
+}
+
+.memory-image {
+  padding-left: 20px;
+  padding-right: 20px;
+}
+
+.memory-mapbox {
+  div {
+    margin: 0 auto;
+  }
+}
+
+.comment-form {
+  padding-top: 50px;
+}
+
+textarea.memory-textarea {
+  height: 100px;
+}
+
+.comment-span {
+  text-decoration: underline;
+}
+
+.comment-text {
+  margin: 10px;
+}
+
 
 $pink: #ffb3b3;
 $blue: #6D63FF;
@@ -181,7 +180,5 @@ $blue-invert: rgb(57, 57, 57);
 
 $primary: $blue;
 $primary-invert:rgb(57, 57, 57);
-
-
 
 @import '~bulma/bulma.sass';

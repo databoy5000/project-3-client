@@ -15,7 +15,6 @@ Share memories on a map-based platform, track down urban legends, ancestry & muc
 - [Technologies Used](#technologies-used)
 - [Wireframe](#wireframe)
 - [Responsibilities](#responsibilities)
-  - [Data Mining](#data-mining)
 - [Key Learnings](#key-learnings)
 - [Achievements](#achievements)
 - [Challenges](#challenges)
