@@ -7,10 +7,11 @@ import { confirmAlert } from 'react-confirm-alert'
 import 'react-confirm-alert/src/react-confirm-alert.css'
 
 import Error from '../common/Error'
-import { baseUrl, memoriesPath, commentPath, headers, deleteMemory, editPath } from '../../lib/api'
+import { memoriesPath, commentPath, headers, deleteMemory, editPath } from '../../lib/api'
 import { isOwner } from '../../lib/auth'
-import { publicToken } from '../../lib/mapbox'
+import { publicToken } from '../../config'
 import { subSetViewport } from '../../lib/mapbox'
+import { baseUrl } from '../../config'
 
 function SingleMemory() {
 
@@ -29,7 +30,7 @@ function SingleMemory() {
   })
   const [formError, setFormError] = React.useState(formComment)
 
-  const defaultViewportWidth = window.innerWidth - 200
+  const defaultViewportWidth = ((window.innerWidth * 65 ) / 100)
 
   //* For map content-------------------
   const [viewport, setViewport] = React.useState({
@@ -71,7 +72,7 @@ function SingleMemory() {
   }, [hasComments])
 
   function handleResize() {
-    const newWidth = window.innerWidth - 200
+    const newWidth = ((window.innerWidth * 65 ) / 100)
     setViewport({ ...viewport, width: newWidth }) 
   }
 
@@ -199,8 +200,9 @@ function SingleMemory() {
 
                   <div className="column">
 
-                    <figure className="image memory-image">
+                    <figure className="memory-image-container">
                       <img
+                        className="memory-image"
                         height="540px"
                         width="810px"
                         src={memory.image}

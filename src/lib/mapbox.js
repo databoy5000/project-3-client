@@ -1,7 +1,5 @@
 import { WebMercatorViewport } from 'react-map-gl'
 
-export const publicToken = process.env.REACT_APP_MAPBOX_TOKEN
-
 export function subSetViewport(memoryObject) {
 
   const centerCoordinates = memoryObject.location.coordinates

@@ -2,7 +2,7 @@ import React from 'react'
 import ReactMapGl from 'react-map-gl'
 import Geocoder from 'react-map-gl-geocoder'
 
-import { publicToken } from '../../lib/mapbox'
+import { publicToken } from '../../config'
 
 function MapboxSearch({ onResult }) {
 

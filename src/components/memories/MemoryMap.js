@@ -3,8 +3,9 @@ import { Link } from 'react-router-dom'
 import ReactMapGl, { Marker, Popup } from 'react-map-gl'
 import axios from 'axios'
 
-import { baseUrl, memoriesPath } from '../../lib/api'
-import { publicToken } from '../../lib/mapbox'
+import { memoriesPath } from '../../lib/api'
+import { publicToken } from '../../config'
+import { baseUrl } from '../../config'
 
 function MemoryMap() {
 
