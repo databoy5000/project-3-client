@@ -8,9 +8,6 @@ function Register() {
 
   const history = useHistory()
 
-  // * check if email && username are unique
-  const [isUniqueId, setIsUniqueId] = React.useState(true)
-
   // * check password match
   const [isPasswordMatch, setIsPasswordMatch] = React.useState(true)
 
@@ -46,12 +43,10 @@ function Register() {
         username: formData.username,
         email: formData.email,
       })
-
-      setIsUniqueId(true)
+      
       setFormError({ ...formError, username: '' })
     } catch (err) {
       const errorMessage = err.response.data.errMessage.username
-      setIsUniqueId(false)
       setFormError({ ...formError, username: errorMessage })
     }
   }
@@ -73,7 +68,7 @@ function Register() {
     <>
       <div className="title is-2 has-text-centered has-background-black has-text-white">register</div>
       <section className="container">
-        <div className="columns is-vcentered">
+        <div className="columns is-centered">
           <div className="column is-half is-centered">
             <form className="card is-centered is-one-quarter-desktop is-one-third-widescreen is-half-fullhd has-background-info"
               onSubmit={handleSubmit}
@@ -84,7 +79,7 @@ function Register() {
                   <input
                     className=
                       {`input 
-                ${!isUniqueId ? 'is-danger' : ''}
+                ${formError.username ? 'is-danger' : ''}
                 `}
                     type="text"
                     placeholder="e.g. dreamer666"
@@ -94,7 +89,7 @@ function Register() {
                   />
                 </div>
                 <p className="help is-danger">
-                  {!isUniqueId && 'Invalid credentials, try something else.'}
+                  {formError.username}
                 </p>
               </div>
 
@@ -104,7 +99,7 @@ function Register() {
                   <input
                     className=
                       {`input 
-                ${!isUniqueId || formError.username ? 'is-danger' : ''}
+                ${formError.username || formError.email ? 'is-danger' : ''}
                 `}
                     type="email"
                     placeholder="e.g. muppet754@mail.sz"

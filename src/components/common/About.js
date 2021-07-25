@@ -1,9 +1,6 @@
 import React from 'react'
 
 function About() {
-  React.useEffect(() => {
-    console.log('The About Page has mounted')
-  }, [])
 
   return (
 

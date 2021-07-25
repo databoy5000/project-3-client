@@ -24,8 +24,6 @@ function MemoryMap() {
 
   //* For map content-------------------
   const [viewport, setViewport] = React.useState({
-    latitude: 50,
-    longitude: 0,
     width: viewportWidth,
     height: viewportHeight,
     zoom: 0,
@@ -106,6 +104,8 @@ function MemoryMap() {
               key={memory._id}
               latitude={memory.location.coordinates[1]}
               longitude={memory.location.coordinates[0]}
+              offsetLeft={-28}
+              offsetTop={-40}
             >
               <button
                 className="mapButton"

@@ -10,7 +10,9 @@ function NewMemory() {
 
   function formatTagArray(tags) {
     if (typeof tags === 'string') {
-      const tagsArray = tags.replace(/[^a-zA-Z0-9]/g, ' ').split(' ')
+      const tagsArray = tags.replace(/[^a-zA-Z0-9]/g, ' ')
+      // .split(' ')
+      console.log('tagsArray: ', tagsArray)
       const sanitisedTagsArray = tagsArray.filter(tag => tag !== '')
       return sanitisedTagsArray
     }

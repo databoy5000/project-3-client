@@ -17,8 +17,8 @@ function ImageUpload({ onUpload }) {
           multiple: false,
         }, (err, result) => {
           if (result.event === 'success') {
-            setImage(result.info.url)
-            onUpload(result.info.url)
+            setImage(result.info.secure_url)
+            onUpload(result.info.secure_url)
           }
         }
       )
