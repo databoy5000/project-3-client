@@ -219,7 +219,7 @@ The Geocoder returns detailed information on a successful search of a map locati
   * `userInput`: text that was inputted by the user in the Geocoder's search bar.
   * `coordinates`: latitude and longitude coordinates. The validation requires that if the array length isn't equal to 2, then the coordinates are not valid.
   * `boundaryBox`: should've been called `boundingBox`. The array (format: [minX, minY, maxX, maxY]) represents the coordinates of a bounding box to the which the viewport is set to display.
-  * `placeType`: Options are `country`, `region`, `postcode`, `district`, `place`, `locality`, `neighborhood`, `address`, and `poi`. These are used in case the Geocoder does not return bounding box coordinates to set the viewport at the correct zoom. Depending on the type, the zoom is set abritrarily with conditionals, using the front-end function `subSetViewport(memoryObject)` at './lib/mapbox.js'.
+  * `placeType`: Options are `country`, `region`, `postcode`, `district`, `place`, `locality`, `neighborhood`, `address`, and `poi`. These are used in case the Geocoder does not return bounding box coordinates to set the viewport at the correct zoom. Depending on the type, the zoom is set abritrarily with conditionals, using the front-end function `subSetViewport(memoryObject)` at './lib/mapbox.js'. [More details here.](#viewport-boundary-box-or-zoom)
 
 #### 4. Comment controller
 The comments are embedded into their respective memories. Therefore, the actions we can perform on comments are to create and remove. We thought updating a comment didn't have much value to the MVP since it was simply text that could be deleted and re-created if a mistake was done at the moment of creation. Also, it didn't have much sense to have the ability to modify days later since it could lose context to the thread.
@@ -471,7 +471,7 @@ Starting a project with a language or a framework with which you've had little p
 
 At the start, I got stuck on form validation errors. There are many ways that you can output these. What seemed to work as a general pattern for all forms, is to highlight with messages and colours the invalidated fields once that the user has attempted a submission (as opposed to doing anything before submission, because it creates a lot of confusion and does not add that much more value). Then, using the `onBlur` attribute to remove error messages and highlights from the form.
  
-Additionally to the previous point, I questioned the value-to-user vs. potential security issue with indicating owned usernames and emails during the registration process. My conclusion is that it could potentially pose a threat to users, to indicated hackers which usernames are being used on the platform.
+Additionally to the previous point, I questioned the value-to-user vs. potential security issue with indicating owned usernames and emails during the registration process ([see here](#register-page)). My conclusion is that it could potentially pose a threat to users, to indicated hackers which usernames are being used on the platform.
 
 I also realised that adding routes to the back-end is something I found myself doing occasionally, although still working through the MVP. Experience will help better see the bigger picture, to have greater accuracy in planning and efficiency in building.
 
