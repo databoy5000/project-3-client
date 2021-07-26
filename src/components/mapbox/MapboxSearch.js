@@ -55,7 +55,7 @@ function MapboxSearch({ onResult }) {
 
                 <ReactMapGl 
                   ref={mapRef}
-                  {...viewport} 
+                  {...viewport}
                   mapboxApiAccessToken={publicToken}
                   onViewportChange={handleViewportChange}
                   onError={handleError}

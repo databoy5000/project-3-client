@@ -1,4 +1,3 @@
-import axios from 'axios'
 import React from 'react'
 import { useHistory, useParams } from 'react-router-dom'
 import ReactMapGl, { Marker } from 'react-map-gl'
@@ -7,11 +6,12 @@ import { confirmAlert } from 'react-confirm-alert'
 import 'react-confirm-alert/src/react-confirm-alert.css'
 
 import Error from '../common/Error'
-import { memoriesPath, commentPath, headers, deleteMemory, editPath } from '../../lib/api'
+import { memoriesPath, deleteMemory, editPath, createComment, deleteComment } from '../../lib/api'
 import { isOwner } from '../../lib/auth'
 import { publicToken } from '../../config'
 import { subSetViewport } from '../../lib/mapbox'
-import { baseUrl } from '../../config'
+import { getSingleMemory } from '../../lib/api'
+import { useForm } from '../../hooks/useForm'
 
 function SingleMemory() {
 
@@ -24,11 +24,9 @@ function SingleMemory() {
 
   const isLoading = !memory && !isError
 
-  //* for comments/error state
-  const [formComment, setFormComment] = React.useState({
+  const { formData, setFormData, handleChange, formError, setFormError } = useForm({
     text: '',
   })
-  const [formError, setFormError] = React.useState(formComment)
 
   const defaultViewportWidth = ((window.innerWidth * 65 ) / 100)
 
@@ -48,7 +46,7 @@ function SingleMemory() {
 
       try {
 
-        const res = await axios.get(`${baseUrl}${memoriesPath}/${memoryId}`)
+        const res = await getSingleMemory(memoryId)
         setMemory(res.data)
 
         // * setting zoom value depending on stored values
@@ -81,26 +79,15 @@ function SingleMemory() {
   // eslint-disable-next-line react-hooks/exhaustive-deps
   },[])
 
-
-  const handleChange = (e) => {
-    setFormComment({ ...formComment,
-      [e.target.name]: e.target.value,
-    })
-  }
-
   const handleSubmit = async (e) => {
 
     e.preventDefault()
 
     // * to prevent empty comments submissions
-    if (formComment.text) {
+    if (formData.text) {
       try {
 
-        await axios.post(
-          `${baseUrl}${memoriesPath}/${memoryId}/${commentPath}`,
-          formComment,
-          headers()
-        )
+        await createComment(formData, memoryId)
 
         // * reset comment input
         e.target.value = ''
@@ -109,11 +96,11 @@ function SingleMemory() {
         setHasComments(!hasComments)
 
         // * reset comment forms to blank
-        setFormComment({ ...formComment, text: '' })
-        setFormError('')
+        setFormData({ text: '' })
+        setFormError({ text: '' })
 
       } catch (err) {
-        setFormError({ ...formError, text: err.response.data.errMessage })
+        setFormError({ text: err.response.data.errMessage })
       }
 
     } else {
@@ -129,16 +116,13 @@ function SingleMemory() {
 
     try {
 
-      await axios.delete(
-        `${baseUrl}${memoriesPath}/${memoryId}/${commentPath}/${e.target.name}`,
-        headers()
-      )
+      await deleteComment(memoryId, e.target.id)
 
       setHasComments(!hasComments)
-      setFormError({ ...formComment, text: '' })
+      setFormError({ text: '' })
 
     } catch (err) {
-      setFormError({ ...formError, text: err.response.data.errMessage })
+      setFormError({ text: err.response.data.errMessage })
     }
   }
 
@@ -183,7 +167,7 @@ function SingleMemory() {
         <>
           <div className="container single-memory">
             <div className="single-memo-card card has-text-white is-centered">
-              
+
               <div className="title-header title has-text-white is-3">
                 <p className="title-p">{memory.title}</p>
                 <p className="date-p has-text-white">
@@ -278,7 +262,7 @@ function SingleMemory() {
                         className={`memory-textarea input ${formError.text ? 'is-danger' : ''} `}
                         placeholder="Type your comments here.."
                         name="text"
-                        value={formComment.text || ''}
+                        value={formData.text || ''}
                         onChange={handleChange}
                       />
 
@@ -315,7 +299,7 @@ function SingleMemory() {
 
                         {isOwner(comment.user.userId) &&
                           <button
-                            name={comment._id}
+                            id={comment._id}
                             onClick={handleDelete}
                             className="button is-info is-small is-outline"
                           >

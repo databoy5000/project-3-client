@@ -10,9 +10,7 @@ function NewMemory() {
 
   function formatTagArray(tags) {
     if (typeof tags === 'string') {
-      const tagsArray = tags.replace(/[^a-zA-Z0-9]/g, ' ')
-      // .split(' ')
-      console.log('tagsArray: ', tagsArray)
+      const tagsArray = tags.replace(/[^a-zA-Z0-9]/g, ' ').split(' ')
       const sanitisedTagsArray = tagsArray.filter(tag => tag !== '')
       return sanitisedTagsArray
     }
@@ -43,7 +41,6 @@ function NewMemory() {
         {
           name: 'location',
           value: {
-            ...formData.location,
             userInput: e.place_name,
             coordinates: e.center,
             boundaryBox: getBoundaryBox(e),

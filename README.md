@@ -282,16 +282,37 @@ The login page uses a similar pattern as the registration page. However, it is m
 
 Additionally, there is a conditional that influences the `Navbar.js`'s display on user login: when a user is logged, `const isLogged = isAuthenticated()` variable returns a boolean because of the function `isAuthenticated()` called from the library `auth.js` (it checks that there is a payload, then that the payload hasn't expired). So if the user is logged, the *Register*/*Login* buttons disappear, and the *New Memory*/*Logout* buttons show up instead.
 
-#### NewMemory page + cloudinary
+#### NewMemory page
 Its structure contains much similarities with the registration page when it comes to the form hook, its submission and handling errors returned from the back-end. However, there are novelties worth discussing:
 
-* <ins>handleNestedChanges()</ins>
+* <ins>handleNestedChanges()</ins><br>
 Because the `Memory` model's `location` value is a nested object, I now have to handle nested changes differently than the other form properties.
 
-TBC
+First, let's take a look at the `useForm.js` hook's `handleChange` which is in charge of updating the form object:
+```js
+  const handleChange = (e) => {
+    setFormData({ ...formData, [e.target.name]: e.target.value })
+  }
+  ```
+Currently, it is designed to access an element's event properties. So, to match this design and keep using `handleChange` within `handleNestedChange`, we re-created the structure of `e.target.name` and `e.target.value`, using the following state update:
+```js
+  handleChange(
+    {
+      target:
+      {
+        name: 'location',
+        value: {
+          userInput: e.place_name,
+          coordinates: e.center,
+          boundaryBox: getBoundaryBox(e),
+          placeType: e.place_type[0],
+        },
+      },
+    })
+```
 
 * <ins>handleTags()</ins><br>
-Since tags are all inputted into the same text input, they need to be formatted so that punctuation is removed, each keywork is separated into its own string and split into the form's `tags` property array. This is done reformatting tags with `const newTags = formatTagArray(e.target.value)`:
+Since tags are all inputted into the same text input, they need to be formatted so that punctuation and special characters are removed, each keywork is separated into its own string and split into the form's `tags` property array. This is done reformatting tags with `const newTags = formatTagArray(e.target.value)`:
 ```js
   function formatTagArray(tags) {
     if (typeof tags === 'string') {
@@ -302,13 +323,90 @@ Since tags are all inputted into the same text input, they need to be formatted 
     return tags
   }
 ```
-As far as my understanding of regular expressions go, `/[^a-zA-Z0-9]/g` only keeps lower and capitalised alphanumerical values. Anything else is replaced with spaces, then split into an array every new space. Finally, remaining empty strings are filtered out. What is left of `newTags` is updated into the formData's `tags` property as an array.
+We had to make use of the regular expressions `/[^a-zA-Z0-9]/g` which was found through an internet search. As far as my understanding of it goes, it only keeps lower and capitalised alphanumerical values. Anything else is replaced with spaces, then split into an array every new space. Finally, remaining empty strings are filtered out. What is left of `newTags` is updated into the formData's `tags` property as an array.
+
+* <ins>Cloudinary</ins><br>
+Cloudinary is a SaaS offering a cloud-based image and video management services. We used their platform to upload memory images. To implement the image upload feature on new memory forms, we were given a template of instructions to follow which I won't go in much detail as I didn't build this logic, although I understand its general structure.
+
+Here's generally how it was implemented:
+  1. To include `<script src="https://upload-widget.cloudinary.com/global/all.js" type="text/javascript"></script>` within `index.html`'s body.
+  2. Copy the hook template `ImageUploadField.js` and import it into the `NewMemory.js` component's JSX as `<ImageUploadField onUpload={handleUpload} />` (child component).
+  3. With the passed prop `onUpload`, use the event handler `handleUpload` to pass file data into the hook.
+  4. On our cloudinary.com, to create a custom preset which will process images with the configured constraints.
+  5. Set the cloudinary URLs (`uploadUrl` and `uploadPreset`) into the project's custom environment's variables, then pull them into the `ImageUploadField.js` hook.
 
 #### Mapbox
-#### Comments
-#### SecureRoute, Error
+To increase components readbility and add challenge, I decided to have the location search input (the map search) of the `NewMemory.js` page as a separate component `MapboxSearch.js`.
 
-#### EditMemory page?
+With this excercise, what I learned was to implement mapbox's `ReactMapGl` and `Geocoder` components combined, how to go through their documentation and how to pass props from a child to parent component.
+
+Let's take a closer look at `ReactMapGl`'s properties:
+  + `ref={mapRef}`: a reference is created such as `const mapRef = React.useRef()` and assigned to the ref attribute of both `ReactMapGl` and `Geocoder`. I'm yet unsure how this part works, but without this set, the component will break. It seems we need to set focus on both the components when they mount to access DOM elements.
+  + `{...viewport}`: spreads the viewport's initial state information such as its size, where it is centered and its zoom.
+  + `mapboxApiAccessToken={publicToken}`: `publicToken` is a variable set in the custom environment's variables `.env` document. It acts as a login credential linked to my Mapbox account to allow use of their products.
+  + `onViewportChange={handleViewportChange}`: event handler allowing to update the viewport when the user interacts with it (e.g. zoom, changing position).
+  + `onError={handleError}`: executed when an error occurs with `ReactMapGl`.
+  + `onLoading={handleLoading}`: executed when `ReactMapGl` is looking up a query.
+  + `onInit={handleLoaded}`: executed after `ReactMapGl` is initialized.
+
+With `Geocoder`, all attributes above work the same, but there is one additional attribute which is <ins>**key to the entire component**</ins>: `onResult={handleResult}`. The API's search result is collected within `handleResult` and passed to the prop `onResult`, then goes up to its parent component `NewMemory.js` where result data is distributed to the correct nested form properties, controlled by the event handler `handleNestedChange`.
+
+#### Single Memory Page
+Most of the component's structure was drafted by [Kat Hackethal](https://github.com/khackethal/). However, I collaborated on the following elements...
+
+##### Map display
+We thought it would offer a better user experience to make the map's width responsive, proportionally to the browser's window size.
+
+Initially, when the component mounts, the map's width is set to `const defaultViewportWidth = ((window.innerWidth * 65 ) / 100)`. Then, an event listener such as `window.addEventListener('resize', handleResize)` is set into the useEffect hook to execute `handleResize`, which sets the viewport to its new width, like so:
+```js
+  function handleResize() {
+    const newWidth = ((window.innerWidth * 65 ) / 100)
+    setViewport({ ...viewport, width: newWidth }) 
+  }
+```
+##### Viewport Boundary Box or Zoom
+Unfortunately, the `MapboxSearch.js`'s result does not always return the boundary box property (correctly called 'bounding box', but I made a naming mistake) as it is an optional parameter.
+
+In `mapbox.js` library, there is a function `subSetViewport(memoryObject)` which allows the viewport to display the memory's `location` depending if it contains a `boundaryBox` property or not:
+  1. When `boundaryBox` values are available (best outcome), mapbox's `WebMercatorViewport` class takes map camera states (latitude, longitude, zoom, pitch, bearing etc.), and performs projections between world and screen coordinates. We retrieve the latitude, longitude and zoom values to set the viewport accoringly.
+  2. When no `boundaryBox` values are available (more of an arbitrary outcome), we looked at [zoom values](https://wiki.openstreetmap.org/wiki/Zoom_levels) to manually set the viewport's zoom, on conditionals, depending on the placeType:
+  ```js
+    if (placeType === 'country') zoom = 6
+    if (placeType === 'region') zoom = 7
+    if (placeType === 'postcode') zoom = 8
+    // etc...
+  ```
+
+##### Comments
+To display each available comment from the memory's comments array, the memory comments are mapped as such `{memory.comments && memory.comments.map(comment => {...})}`.
+
+Only the comment's owner is allowed to delete its own comments. Therefore the function `isOwner(userId)` is called from the `auth.js` library to match the userId in localStorage with the comment's userId set to the button's ID, like so:
+```js
+  {isOwner(comment.user.userId) &&
+    <button
+      id={comment._id}
+      onClick={handleDelete}
+      className="button is-info is-small is-outline"
+    >
+      Delete comment
+    </button>
+  }
+```
+
+This established, the comment form uses the `useForm.js` hook, as all other forms on the app are. `handleSubmit` is the event handler managing comment posts. Here's a breakdown of what it does:
+  + `await createComment(formData, memoryId)`: function called from `api.js`. It executes the POST operation.
+  + `e.target.value = ''`: resets the comment's form's text typed by the user on the page.
+  + `setHasComments(!hasComments)`: sets a boolan state to `hasComments` which acts as a toggle. It's used in the `useEffect(() => {},[hasComments])` dependancy array to fetch the page's memory data once again and display it with the new comment. An alternative would've been to remove `e.preventDefault()` and let the page reload after each submission, but it sounded a sleeker experience to not do this.
+  + Finally, forms are reset at this point.
+
+#### SecureRoute
+In `App.js`, SecureRoute works roughly like an extension to the `<Route path="" component={} />` element. First, it makes a conditional check that the user hasn't a valid token in localStorage. When it is the case, the user is redirected to the login page with `<Redirect to="/login"/>`. Else, `<Route {...rest} component={Component} />` is returned, directing the user to the desired component.
+
+#### Error
+In `App.js`, `<Route path="/*" component={Error} />` is the last component route added to the router. The wildcard path `/*` means that any paths after the backslash e.g. https://memory-map.netlify.app/ will route to the `Error.js` component. However, because all other component routes in the `<Switch>` are placed before it, the user will only be directed to `Error` when the path is anything but the above routes.
+
+#### EditMemory page
+This component is roughly a copy of the `NewMemory.js` component, with the difference that all input values are prefilled e.g. `defaultValue={formData.title}`, and a few tweeks were undergone on form validation requirements, messages and highlights.
 
 ## Challenges, Achievements & Key Learnings
 
@@ -317,6 +415,10 @@ As far as my understanding of regular expressions go, `/[^a-zA-Z0-9]/g` only kee
 * back/front-end username/email unique check at registration. makes me question if it poses a security issue, giving away usernames to potential hackers. also if it makes too many backend calls therefore taking unnecessary strain on the back-end (but intuition tells me that it wno't be the case unless we have a mad amount of signups all at once).
 
 * possible improvement to create a slightly different registration>login process with email confirmation. keep logged and public pages accessible but prompt to confirm email when trying to access secureRoutes.
+
+* how does useRef works in regards to ReactMapGl + Geocoder
+
+* bounding box naming mistake
 
 ### Back-end
 ### Front-end

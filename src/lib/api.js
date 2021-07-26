@@ -20,7 +20,7 @@ export function getAllMemories() {
 }
 
 export function getSingleMemory(memoryId) {
-  return axios.get(`${baseUrl}${memoriesPath}${memoryId}`)
+  return axios.get(`${baseUrl}${memoriesPath}/${memoryId}`)
 }
 
 export function createMemory(formdata) {
@@ -33,6 +33,21 @@ export function editMemory(id, formdata) {
 
 export function deleteMemory(id) {
   return axios.delete(`${baseUrl}${memoriesPath}/${id}`, headers())
+}
+
+export function createComment(formData, memoryId) {
+  return axios.post(
+    `${baseUrl}${memoriesPath}/${memoryId}/${commentPath}`,
+    formData,
+    headers()
+  )
+}
+
+export function deleteComment(memoryId, commentId) {
+  return axios.delete(
+    `${baseUrl}${memoriesPath}/${memoryId}/${commentPath}/${commentId}`,
+    headers()
+  )
 }
 
 // * Authentication Requests

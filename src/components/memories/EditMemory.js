@@ -142,7 +142,7 @@ function EditMemory() {
                     name="title"
                     onChange={handleChange}
                     onBlur={handleDanger}
-                    value={formData.title}
+                    defaultValue={formData.title}
                     required
                   />
 
@@ -170,7 +170,7 @@ function EditMemory() {
                       handleNestedChange(e)
                       setFormError({ ...formError, location: '' })
                     }}
-                    value={formData.location.userInput || ''}
+                    defaultValue={formData.location.userInput || ''}
                     onSubmit={handleDanger}
                     required
                     disabled
@@ -189,7 +189,7 @@ function EditMemory() {
                     type="date"
                     name="date"
                     onChange={handleChange}
-                    value={moment(formData.date).format('YYYY-MM-DD')}
+                    defaultValue={moment(formData.date).format('YYYY-MM-DD')}
                     required
                   />
 
@@ -208,7 +208,7 @@ function EditMemory() {
                     name="description"
                     onChange={handleChange}
                     onBlur={handleDanger}
-                    value={formData.description}
+                    defaultValue={formData.description}
                     required
                   />
 
@@ -226,7 +226,7 @@ function EditMemory() {
                     placeholder="e.g. crazy, miraculous, romantic"
                     name="tags"
                     onChange={handleTags}
-                    value={formData.tags}
+                    defaultValue={formData.tags}
                   />
 
                 </div>
