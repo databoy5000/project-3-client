@@ -46,7 +46,7 @@ Share memories on a map-based platform, track down urban legends, ancestry & muc
     - [SecureRoute](#secureroute)
     - [Error](#error)
     - [EditMemory page](#editmemory-page)
-* [Thoughts on additional features](#thoughts-on-additional-features)
+* [Thoughts on Additional Features](#thoughts-on-additional-features)
 * [Observations & Key Learnings](#observations---key-learnings)
   + [Human](#human)
   + [Technical](#technical)
@@ -449,7 +449,7 @@ In `App.js`, `<Route path="/*" component={Error} />` is the last component route
 #### EditMemory page
 This component is roughly a copy of the `NewMemory.js` component, with the difference that all input values are prefilled e.g. `defaultValue={formData.title}`, and a few tweaks were undergone on form validation requirements, messages and highlights.
 
-## Thoughts on additional features
+## Thoughts on Additional Features
 Having user profile pages would've been a great feature to have, similarly to social media applications. That way users can follow each other's profiles to get updates on memories and perhaps bonus perks.
 
 Additional nice-to-haves would've been:
