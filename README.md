@@ -46,18 +46,19 @@ Share memories on a map-based platform, track down urban legends, ancestry & muc
     - [SecureRoute](#secureroute)
     - [Error](#error)
     - [EditMemory page](#editmemory-page)
-* [Challenges/Wins & Key Learnings](#challenges-wins---key-learnings)
+* [Thoughts on additional features](#thoughts-on-additional-features)
+* [Observations & Key Learnings](#observations---key-learnings)
   + [Human](#human)
   + [Technical](#technical)
 * [Conclusions](#conclusions)
 
 ## Brief
 
-* **Build a full-stack application** by making your back-end and your front-end
-* **Use an Express API** to serve your data from a Mongo database
-* **Consume your API with a separate front-end** built with React
-* **Be a complete product** which most likely means multiple relationships and CRUD functionality for at least a couple of models
-* **Implement thoughtful user stories/wireframes** that are significant enough to help you know which features are core MVP and which you can cut
+* **Build a full-stack application** by making your back-end and your front-end.
+* **Use an Express API** to serve your data from a Mongo database.
+* **Consume your API with a separate front-end** built with React.
+* **Be a complete product** which most likely means multiple relationships and CRUD functionality for at least a couple of models.
+* **Implement thoughtful user stories/wireframes** that are significant enough to help you know which features are core MVP and which you can cut.
 * **Have a visually impressive design** to kick your portfolio up a notch and have something to wow future clients & employers. **ALLOW** time for this.
 * **Be deployed online** so it's publicly accessible.
 
@@ -66,8 +67,8 @@ Share memories on a map-based platform, track down urban legends, ancestry & muc
 To guarantee continuity during the project build, we established the following elements:
 * To assure communications on a messaging/video-conferencing app where we could write, talk, exchange resources and share screens.
 * [Project Management Sheet](https://docs.google.com/spreadsheets/d/17YFoGBlmBzowzMGTn-n-OWcBpImDZlBbY4UEJlJJn4I/view): to document the project scope and all specifications to the app into a single shared space.
-(Sample of the main specifications tab)
 
+(Sample of the main specifications tab)
 <img src="https://imgur.com/dLKrUWe.png" alt="App Specifications" width="700">
 
 Then, we defined the following milestones:
@@ -75,14 +76,14 @@ Then, we defined the following milestones:
 1. Define general app specifications, its models and descending API endpoints.
 2. Construct wireframes.
 3. Build cycle:
-    - Task planning/coordinating as a team
-    - Code
-    - Test
-    - Troubleshoot & fix errors
-    - Push working feature to GitHub
-4. Syle completed components/pages
-5. Final tests to validate app flow and design finishing
-6. Backend & Frontend deployment
+    - Task planning/coordinating as a team,
+    - Code,
+    - Test,
+    - Troubleshoot & fix errors,
+    - Push working feature to GitHub.
+4. Style completed components/pages.
+5. Final tests to validate app flow and design finishing.
+6. Backend & Frontend deployment.
 
 During the <ins>build cycle</ins>, we worked our way linearly from the back-end to the front-end, clearly defining tasks (one or multiple complete features per task) between team members to work through them separately to have minimum overlap, avoiding merge conflicts and/or work being done twice.
 
@@ -129,13 +130,11 @@ During the <ins>build cycle</ins>, we worked our way linearly from the back-end 
 ### <ins>Back-end</ins>
 
 #### 1. Memory controller
-Following the CRUD pattern, I started working my way through building the memoryController.js in the following order: read (all memories, then single memory), create, delete and update.
+As a general pattern, all CRUD operations are completed in a try/catch block to assure that errors are fed back to the client. Whether a request was completed or not, the client is always fed back with a [response status](https://developer.mozilla.org/en-US/docs/Web/HTTP/Status). When an error is caught, `next(err)` is used to execute the next middleware function `errorHandler()` in `errorHandler.js`. `if` conditionals are occasionally used within the `try` block to throw specific errors (e.g. when a memory id cannot be found in the collection). Each time that a new operator is built, its respective route is sensibly added to `router.js`.
 
-As a general pattern, all operations are completed in a try/catch block to assure that errors are fed back to the client. Whether a request was completed or not, the client is always fed back with a [response status](https://developer.mozilla.org/en-US/docs/Web/HTTP/Status). When an error is caught, `next(err)` is used to execute the next middleware function `errorHandler()` in `errorHandler.js`. Also, `if` conditionals can be used in the `try` block to throw specific errors (e.g. when a memory id cannot be found in the collection).
+When querying a specific single element of a collection (e.g. such as a memory or a comment):
 
-Each time that a new operator is built, its respective route is sensibly added to `router.js`. When querying a specific single element of a collection (e.g. such as a memory or a comment):
-
-* the element's ID is included in the route such as a parameter, to then be used to query the database collection to fetch that element. e.g. To fetch a single memory, `:memoryId` is passed into `router.route('/memories/:memoryId')`. Then, it's collected in the controller as `const id = req.params.memoryId` to pass the `id` variable into `const memory = await Memory.findById(id)`
+* The element's ID is included in the route such as a parameter, to then be used to query the database collection to fetch that element. e.g. To fetch a single memory, `:memoryId` is passed into `router.route('/memories/:memoryId')`. Then, it's collected in the controller as `const id = req.params.memoryId` to pass the `id` variable into `const memory = await Memory.findById(id)`
 
 A quick breakdown of the request operations' differences:
 
@@ -173,7 +172,7 @@ The first step is adding the middleware `app.use(errorHandler)` into `app.js`, a
   }
 ```
 
-At last, to configure the errorHandler function (inside `errorHandler.js`), we have to identify each error with their respective name to return the status and custom error response object:
+Finally, to configure the `errorHandler()` function (inside `errorHandler.js`), we have to identify each error with their respective class name to return the status and custom error response object:
 
 ```js
   if (err.name === 'NotValid') {
@@ -198,7 +197,9 @@ To follow the example above, here's how an error is thrown in `userController.js
 #### 3. Memory model update
 At the time of our first Memory model draft, we weren't yet aware of how to interact with Mapbox's [Geocoder](https://www.npmjs.com/package/react-map-gl-geocoder), and what location information we wanted to retrieve from it. Therefore, the model had to be updated when a successful response was received at front-end level tests, and the documentation understood.
 
-The Geocoder returns detailed information on a successful search of a map location. As a team, we conviened that we wanted to keep multiple properties of this search result which would be nested as an object inside of a main property called `location` (for organisational purposes, but also, because we hadn't done it before, we weren't we wanted to try what we didn't know). Here's an extract of the `location` property's object:
+The Geocoder returns detailed information on a successful search of a map location. We conviened that we wanted to keep multiple properties of this search result which would be nested as an object inside of a main property called `location` (for organisational purposes, but also, because we hadn't done it before, we weren't we wanted to try what we didn't know).
+
+Here's an extract of the `location` property from the memory's model:
 
 ```js
   location: {
@@ -216,9 +217,9 @@ The Geocoder returns detailed information on a successful search of a map locati
   },
 ```
 
-  * `userInput`: text that was inputted by the user in the Geocoder's search bar.
-  * `coordinates`: latitude and longitude coordinates. The validation requires that if the array length isn't equal to 2, then the coordinates are not valid.
-  * `boundaryBox`: should've been called `boundingBox`. The array (format: [minX, minY, maxX, maxY]) represents the coordinates of a bounding box to the which the viewport is set to display.
+  * `userInput`: Text that was inputted by the user in the Geocoder's search bar.
+  * `coordinates`: Latitude and longitude coordinates. The validation requires that if the array length isn't equal to 2, then the coordinates are not valid.
+  * `boundaryBox`: Should've been called `boundingBox`. The array (format: [minX, minY, maxX, maxY]) represents the coordinates of a bounding box to the which the viewport is set to display.
   * `placeType`: Options are `country`, `region`, `postcode`, `district`, `place`, `locality`, `neighborhood`, `address`, and `poi`. These are used in case the Geocoder does not return bounding box coordinates to set the viewport at the correct zoom. Depending on the type, the zoom is set abritrarily with conditionals, using the front-end function `subSetViewport(memoryObject)` at './lib/mapbox.js'. [More details here.](#viewport-boundary-box-or-zoom)
 
 #### 4. Comment controller
@@ -296,9 +297,7 @@ Generally, I chose to use follow the following pattern on inputs:
   3. `onBlur={eventHandler}`: where eventHandler can be either of the callbacks `handleUnique` or `handlePassMatch` which to removes formError property values (therefore removing error messages and input box highlights) given that the correct conditions are met when the user clicks away from the input.
 
 * <ins>`handleUnique()`</ins><br>
-The idea behind this event handler is to improve the user experience by making a quicker, smoother registration.
-
-It makes a call to the back-end when the user clicks away from the input fields, to instantly check without submission that either the username or email inputs are not already existing in the database, therefore being unique. In the case that they are not unique, an error message is returned `onBlur`.
+To improve the user experience by making a quicker, smoother registration. It makes a call to the back-end when the user clicks away (`onBlur`) from the input fields, to instantly check without submission that either the username or email inputs are not already existing in the database, therefore being unique. In the case that they are not unique, an error message is returned `onBlur`.
 
 `userCheck()` makes a back-end check through a custom route (which I configured), to invalidate a username/email that already exists in the database.
 
@@ -315,18 +314,17 @@ The alternative would've been to set errors on submission, but it seemed to make
 * <ins>`handleSubmit()`</ins><br>
 The back-end call is made into a try/catch block. When a call returns a successful response, the token is collected and set into localStorage with the `setToken` function imported from the `auth.js` library. That way, the user gets logged as soon as the registration has occurred, avoiding it to re-enter its credentials onto the login page.
 
-At last, `const history = useHistory()` is used to navigate the user to the `’/memories’` page on successful form submission. Because `history` is the instance of an array where the last index represents the current that the user’s browser has loaded, pushing `’/memories’` to the array will redirect the user to the memories page.
+Finally, `const history = useHistory()` is used to navigate the user to the `’/memories’` page on successful form submission. Because `history` is the instance of an array where the last index represents the current that the user’s browser has loaded, pushing `’/memories’` to the array will redirect the user to the memories page.
 
 #### Login page
 The login page uses a similar pattern as the registration page. However, it is much simpler as it only handles a single message '*Invalid credentials supplied.*' on submission.
 
-Additionally, there is a conditional that influences the `Navbar.js`'s display on user login: when a user is logged, `const isLogged = isAuthenticated()` variable returns a boolean because of the function `isAuthenticated()` called from the library `auth.js` (it checks that there is a payload, then that the payload hasn't expired). So if the user is logged, the *Register*/*Login* buttons disappear, and the *New Memory*/*Logout* buttons show up instead.
+There is also a conditional that influences the `Navbar.js`'s display on user login: when a user is logged, `const isLogged = isAuthenticated()` variable returns a boolean because of the function `isAuthenticated()` called from the library `auth.js` (it checks that there is a payload, then that the payload hasn't expired). So if the user is logged, the *Register*/*Login* buttons disappear, and the *New Memory*/*Logout* buttons show up instead.
 
 #### NewMemory page
-Its structure contains many similarities with the registration page when it comes to the form hook, its submission and handling errors returned from the back-end. However, there are novelties worth discussing:
+Its structure contains many similarities with the registration page (form hook & submission, and validation errors). Here are the differences:
 
 * <ins>handleNestedChanges()</ins><br>
-Because the `Memory` model's `location` value is a nested object, I now have to handle nested changes differently than the other form properties.
 First, let's take a look at the `useForm.js` hook's `handleChange` which is in charge of updating the form object:
 
 ```js
@@ -335,7 +333,7 @@ First, let's take a look at the `useForm.js` hook's `handleChange` which is in c
   }
 ```
 
-Currently, it is designed to access an element's event properties. So, to match this design and keep using `handleChange` within `handleNestedChange`, we re-created the structure of `e.target.name` and `e.target.value`, using the following state update:
+Currently, `handleChange()` is designed to access an element's <ins>event</ins> properties (`e.target.name` and `e.target.value`). So, to match this pattern, we re-created a structure using the following state update:
 
 ```js
   handleChange(
@@ -355,7 +353,7 @@ Currently, it is designed to access an element's event properties. So, to match 
 ```
 
 * <ins>handleTags()</ins><br>
-Since tags are all inputted into the same text input, they need to be formatted so that punctuation and special characters are removed, each keywork is separated into its own string and split into the form's `tags` property array. This is done reformatting tags with `const newTags = formatTagArray(e.target.value)`:
+Tags are typed onto the same single imput, so they need to be formatted so that punctuation and special characters are removed, each keywork is separated into its own string and split into the form's `tags` property array. This is done reformatting tags with `const newTags = formatTagArray(e.target.value)`:
 
 ```js
   function formatTagArray(tags) {
@@ -368,20 +366,16 @@ Since tags are all inputted into the same text input, they need to be formatted 
   }
 ```
 
-We had to make use of the regular expressions `/[^a-zA-Z0-9]/g` which was found through an internet search. As far as my understanding of it goes, it only keeps lower and capitalised alphanumerical values. Anything else is replaced with spaces, then split into an array every new space. Finally, the remaining empty strings are filtered out. What is left of `newTags` is updated into the formData's `tags` property as an array.
+We had to make use of the regular expressions `/[^a-zA-Z0-9]/g` which was found through an internet search. As far as I get it, it only keeps lower and capitalised alphanumerical values. Anything else is replaced with spaces, then split into an array every new space. Finally, the remaining empty strings are filtered out. What is left of `newTags` is updated into the formData's `tags` property as an array.
 
 * <ins>Cloudinary</ins><br>
-Cloudinary is a SaaS offering cloud-based image and video management services. We used their platform to upload memory images. To implement the image upload feature on new memory forms, we were given a template of instructions to follow which I won't go into much detail about as I didn't build this logic, although I understand its general structure. Here's generally how it was implemented:
-  1. To include `<script src="https://upload-widget.cloudinary.com/global/all.js" type="text/javascript"></script>` within `index.html`'s body.
-  2. Copy the hook template `ImageUploadField.js` and import it into the `NewMemory.js` component's JSX as `<ImageUploadField onUpload={handleUpload} />` (child component).
-  3. With the passed prop `onUpload`, use the event handler `handleUpload` to pass file data into the hook.
-  4. On our cloudinary.com, create a custom preset which will process images with the configured constraints.
-  5. Set the cloudinary URLs (`uploadUrl` and `uploadPreset`) into the project's custom environment's variables, then pull them into the `ImageUploadField.js` hook.
+Cloudinary is a SaaS offering cloud-based image and video management services. In our case, we use it to upload memory images on new memory forms, with the provided hook `ImageUploadField.js` which also contains URLs to keep safe in our environment variable's document `.env`. There's also a custom preset to create on cloudinary.com, which will process all images with the configured settings.
 
 #### Mapbox
-To increase components readability and add challenges, I decided to have the location search input (the map search) of the `NewMemory.js` page as a separate component `MapboxSearch.js`.
+To increase components readability and add challenges, we decided to have the location search input (the map search) of the `NewMemory.js` page as a separate component `MapboxSearch.js`.
 
 With this exercise, what I learned was to implement Mapbox’s `ReactMapGl` and `Geocoder` components combined, how to go through their documentation and how to pass props from a child to parent component.
+
 Let's take a closer look at `ReactMapGl`'s properties:
 
   + `ref={mapRef}`: a reference is created such as `const mapRef = React.useRef()` and assigned to the ref attribute of both `ReactMapGl` and `Geocoder`. I'm yet unsure how this part works, but without this set, the component will break. It seems we need to set focus on both the components when they mount to access DOM elements.
@@ -410,8 +404,7 @@ Initially, when the component mounts, the map's width is set to `const defaultVi
 ```
 
 ##### Viewport Boundary Box or Zoom
-Unfortunately, the `MapboxSearch.js`'s result does not always return the boundary box property (correctly called 
-'bounding box', but I made a naming mistake) as it is an optional parameter.
+Unfortunately, the `MapboxSearch.js`'s result does not always return the boundary box property (correctly called 'bounding box', but I made a naming mistake) as it is an optional parameter.
 In `mapbox.js` library, there is a function `subSetViewport(memoryObject)` which allows the viewport to display the memory's `location` depending if it contains a `boundaryBox` property or not:
 
   1. When `boundaryBox` values are available (best outcome), mapbox's `WebMercatorViewport` class takes map camera states (latitude, longitude, zoom, pitch, bearing etc.), and performs projections between world and screen coordinates. We retrieve the latitude, longitude and zoom values to set the viewport accoringly.
@@ -441,7 +434,7 @@ Only the comment's owner is allowed to delete its own comments. Therefore the fu
   }
 ```
 
-This established, the comment form uses the `useForm.js` hook, like all other forms on the app are. `handleSubmit` is the event handler managing comment posts. Here's a breakdown of what it does:
+The comment form uses the `useForm.js` hook, like all other forms on the app are. `handleSubmit` is the event handler managing comment posts. Here's a breakdown of what it does:
   + `await createComment(formData, memoryId)`: function called from `api.js`. It executes the POST operation.
   + `e.target.value = ''`: resets the comment's form's text typed by the user on the page.
   + `setHasComments(!hasComments)`: sets a boolan state to `hasComments` which acts as a toggle. It's used in the `useEffect(() => {},[hasComments])` dependancy array to fetch the page's memory data once again and display it with the new comment. An alternative would've been to remove `e.preventDefault()` and let the page reload after each submission, but it sounded a sleeker experience to not do this.
@@ -456,7 +449,17 @@ In `App.js`, `<Route path="/*" component={Error} />` is the last component route
 #### EditMemory page
 This component is roughly a copy of the `NewMemory.js` component, with the difference that all input values are prefilled e.g. `defaultValue={formData.title}`, and a few tweaks were undergone on form validation requirements, messages and highlights.
 
-## Challenges/Wins & Key Learnings
+## Thoughts on additional features
+Having user profile pages would've been a great feature to have, similarly to social media applications. That way users can follow each other's profiles to get updates on memories and perhaps bonus perks.
+
+Additional nice-to-haves would've been:
++ Infinite scroll on the memories index page.
++ Random Memory shuffle page.
++ Count of how many users have seen a single memory.
++ Keyword search in the navigation bar.
++ Turn tags into Hashtags and have a dedicated page to sort memories by Hashtags.
+
+## Observations & Key Learnings
 
 ### Human
 We hadn't even started the project and teams weren't yet picked, and the first element that came to my attention in this project was "How are we going to manage this project as a team, making it beneficial to all members, where all are treated equally and without instructors designating a leader?".
@@ -464,6 +467,7 @@ We hadn't even started the project and teams weren't yet picked, and the first e
 Without a framework to guide us through the project, things could easily go in many directions. So I prepared a [Project Management Sheet](https://docs.google.com/spreadsheets/d/17YFoGBlmBzowzMGTn-n-OWcBpImDZlBbY4UEJlJJn4I/view) which I thought would be a good start for all of us to interact and set the project boundaries, as a team.
 
 Another challenge is communication, more specifically interpersonal language. We might interpret fairly similar and reasonable thoughts but in different ways which might not be understood in the manner they were originally intended to. To me the best way is to sit back and listen, to get everyone to share their thoughts equally, accept other member's ideas, make compromises, but also to present and have my ideas observed and to argue all ideas constructively.
+
 The project held its weight, and I believe that everyone had a voice and its share of work and authenticity on this project, which made it a successful exercise. There were misunderstandings and disagreements (which I embrace), but they were far from taking the project off the tracks.
 
 ### Technical
@@ -473,7 +477,7 @@ At the start, I got stuck on form validation errors. There are many ways that yo
  
 Additionally to the previous point, I questioned the value-to-user vs. potential security issue with indicating owned usernames and emails during the registration process ([see here](#register-page)). My conclusion is that it could potentially pose a threat to users, to indicated hackers which usernames are being used on the platform.
 
-I also realised that adding routes to the back-end is something I found myself doing occasionally, although still working through the MVP. Experience will help better see the bigger picture, to have greater accuracy in planning and efficiency in building.
+I also realised that adding routes to the back-end is something I found myself doing occasionally, although still working through the MVP. Experience will help to see the bigger picture, to have greater accuracy in planning and efficiency in building.
 
 Although we had set a 'Naming Conventions' tab on our [Project Management Sheet](https://docs.google.com/spreadsheets/d/17YFoGBlmBzowzMGTn-n-OWcBpImDZlBbY4UEJlJJn4I/view), conventions were omitted (Disclaimer: I'm mentioning this for the sole purpose of offering a constructive observation). I don't believe that it matters too much on a project of this scale, but I can foresee how it could turn into a cluster of problems and reduce readability, on a larger scale commercial project where many developers contribute to building a product or service. I firmly believe that diligence is key, but it's also ok to be forgiving (I may have even made some of these mistakes myself).
 
